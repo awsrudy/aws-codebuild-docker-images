@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Merge upstream changes
         run: |
-          git config --gloabel user.name 'AWS CodeBuild Image Merger'
+          git config --global user.name 'AWS CodeBuild Image Merger'
           git pull --unshallow # This option ensures you don't have issues with unrelated history
           #This is the official AWS CodeBuild Repo that you would fork from and merge in from.
           # We are calling this repo upstream as origin is your forked repo
