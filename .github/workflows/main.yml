@@ -19,15 +19,14 @@ jobs:
       - uses: actions/checkout@v2
       - name: Merge upstream changes
         run: |
-          git config --global user.name 'AWS CodeBuild Image Merger'
-          git pull --unshallow # This option ensures you don't have issues with unrelated history
+          git config user.name 'AWS CodeBuild Image Merger'
+          git config pull.rebase true
+          git pull # This option ensures you don't have issues with unrelated history
           #This is the official AWS CodeBuild Repo that you would fork from and merge in from.
           # We are calling this repo upstream as origin is your forked repo
-          git remote add upstream https://github.com/aws/aws-codebuild-docker-images.git
           git fetch -p
           # Now merge in upstream branch
-          git config pull.rebase true
-          git pull upstream/master
+          git pull https://github.com/aws/aws-codebuild-docker-images.git main
       - name: "Configure AWS Credentials"
         # You may pin to the exact commit or the version.
         # uses: aws-actions/configure-aws-credentials@e97d7fbc8e0e5af69631c13daa0f4b5a8d88165b
