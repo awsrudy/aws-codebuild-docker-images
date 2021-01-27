@@ -5,7 +5,7 @@ phases:
 #       - cd $CODEBUILD_SRC_DIR/ubuntu/standard/2.0
 #       - docker build -t aws/codebuild/standard:2.0 .
       - cd $CODEBUILD_SRC_DIR/al2/x86_64/standard/2.0
-      - docker build https://github.com/awsrudy/aws-codebuild-docker-images.git#aws/codebuild/amazonlinux2-x86_64-standard:2.0 .
+      - docker build https://github.com/awsrudy/aws-codebuild-docker-images.git#main:al2/x86_64/standard/2.0
   post_build:
     commands:
       - echo 'Logging in to Amazon ECR...'
