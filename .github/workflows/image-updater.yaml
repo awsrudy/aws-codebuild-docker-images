@@ -38,7 +38,7 @@ jobs:
             echo "No changes, finishing job"
             exit 0;
           fi
-          echo "${REMOTE_HASH} > hash-data.txt
+          echo "${REMOTE_HASH}" > hash-data.txt
       - name: Update Last Checked Commit Hash with Updated Hash
         uses: actions/upload-artifact@v2
         with:
