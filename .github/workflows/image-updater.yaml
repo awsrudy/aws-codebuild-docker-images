@@ -16,6 +16,15 @@ jobs:
   check-for-changes:
     runs-on: ubuntu-latest
     steps:
+      - name: temp1
+        run: |
+          REMOTE_HASH=$(git ls-remote https://github.com/aws/aws-codebuild-docker-images.git refs/heads/master | cut -f 1 )
+          echo ${REMOTE_HASH} > hash-data.txt
+      - name: temp2
+        uses: actions/upload-artifact@v2
+        with:
+          name: hash-data
+          path: hash-data.txt
       - name: Download Artifact with Last Checked Commit Hash
         uses: actions/download-artifact@v2
         with:
