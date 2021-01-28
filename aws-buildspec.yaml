@@ -1,7 +1,12 @@
 version: 0.2
+env:
+  secrets-manager: 
+    DOCKER_HUB_USER: "DockerHubCredentials:userid"
+    DOCKER_HUB_PASSWORD: "DockerHubCredentials:password"
 phases:
   build:
     commands:
+      - docker login -p $DOCKER_HUB_PASSWORD -u $DOCKER_HUB_USER
       - cd $CODEBUILD_SRC_DIR/al2/x86_64/standard/2.0
       - docker build https://github.com/awsrudy/aws-codebuild-docker-images.git#main:al2/x86_64/standard/2.0 -t al2-x8664-standard-2:latest
       - echo 'Logging in to Amazon ECR...'
