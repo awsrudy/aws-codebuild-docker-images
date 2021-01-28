@@ -13,53 +13,76 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  auto-merge:
+  check-for-changes:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Merge upstream changes
+      - name: Download Artifact with Last Checked Commit Hash
+        uses: actions/download-artifact@v2
+        with:
+          name: hash-data
+          path: hash-data.txt
+      - name: Compare Master Branch Commit with Last Checked Commit
         run: |
-          git config user.name 'AWS CodeBuild Image Merger'
-          git config pull.rebase true
-          git pull # This option ensures you don't have issues with unrelated history
-          #This is the official AWS CodeBuild Repo that you would fork from and merge in from.
-          # We are calling this repo upstream as origin is your forked repo
-          git fetch -p
-          # Now merge in upstream branch
-          git pull https://github.com/aws/aws-codebuild-docker-images.git master
-      - name: "Configure AWS Credentials"
-        # You may pin to the exact commit or the version.
-        # uses: aws-actions/configure-aws-credentials@e97d7fbc8e0e5af69631c13daa0f4b5a8d88165b
-        uses: aws-actions/configure-aws-credentials@v1
+          REMOTE_HASH=$(git ls-remote https://github.com/aws/aws-codebuild-docker-images.git refs/heads/master | cut -f 1 )
+          LAST_HASH_KNOWN=$(cat hash-data.txt)
+          if [[ ${REMOTE_HASH} == ${LAST_KNOWN_HASH} ]]; then
+            echo "No changes, finishing job"
+            exit 0;
+          fi
+          echo "${REMOTE_HASH} > hash-data.txt
+      - name: Update Last Checked Commit Hash with Updated Hash
+        uses: actions/upload-artifact@v2
         with:
-          # AWS Access Key ID. This input is required if running in the GitHub hosted environment. It is optional if running in a self-hosted environment that already has AWS credentials, for example on an EC2 instance.
-          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
-          # AWS Secret Access Key. This input is required if running in the GitHub hosted environment. It is optional if running in a self-hosted environment that already has AWS credentials, for example on an EC2 instance.
-          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-          # AWS Region, e.g. us-east-2
-          aws-region: us-east-1
-          # Whether to set the AWS account ID for these credentials as a secret value, so that it is masked in logs. Valid values are 'true' and 'false'. Defaults to true
-          mask-aws-account-id: true
-          # Use the provided credentials to assume an IAM role and configure the Actions environment with the assumed role credentials rather than with the provided credentials
-#           role-to-assume: # optional
-          # Role duration in seconds (default: 6 hours)
-#           role-duration-seconds: # optional
-          # Role session name (default: GitHubActions)
-#           role-session-name: # optional
-          # The external ID of the role to assume
-#           role-external-id: # optional
-          # Skip session tagging during role assumption
-#           role-skip-session-tagging: # optional
-      - name: Run CodeBuild
-        # You may pin to the exact commit or the version.
-        # uses: aws-actions/aws-codebuild-run-build@0a2ddc3a24e0f6b41d4a61635d87dcb2482c7b49
-        uses: aws-actions/aws-codebuild-run-build@v1.0.3
-        with:
-          # AWS CodeBuild Project Name
-          project-name: CodeBuildImageBuilder-AL2-x86_64-Standard
-#           # Buildspec Override
-#           buildspec-override: # optional
-#           # Comma separated list of environment variables to send to CodeBuild
-#           env-vars-for-codebuild: # optional
+          name: hash-data
+          path: hash-data.txt
+          
+#   auto-merge:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#       - name: Merge upstream changes
+#         run: |
+#           git config user.name 'AWS CodeBuild Image Merger'
+#           git config pull.rebase true
+#           git pull # This option ensures you don't have issues with unrelated history
+#           #This is the official AWS CodeBuild Repo that you would fork from and merge in from.
+#           # We are calling this repo upstream as origin is your forked repo
+#           git fetch -p
+#           # Now merge in upstream branch
+#           git pull https://github.com/aws/aws-codebuild-docker-images.git master
+#       - name: "Configure AWS Credentials"
+#         # You may pin to the exact commit or the version.
+#         # uses: aws-actions/configure-aws-credentials@e97d7fbc8e0e5af69631c13daa0f4b5a8d88165b
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           # AWS Access Key ID. This input is required if running in the GitHub hosted environment. It is optional if running in a self-hosted environment that already has AWS credentials, for example on an EC2 instance.
+#           aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+#           # AWS Secret Access Key. This input is required if running in the GitHub hosted environment. It is optional if running in a self-hosted environment that already has AWS credentials, for example on an EC2 instance.
+#           aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+#           # AWS Region, e.g. us-east-2
+#           aws-region: us-east-1
+#           # Whether to set the AWS account ID for these credentials as a secret value, so that it is masked in logs. Valid values are 'true' and 'false'. Defaults to true
+#           mask-aws-account-id: true
+#           # Use the provided credentials to assume an IAM role and configure the Actions environment with the assumed role credentials rather than with the provided credentials
+# #           role-to-assume: # optional
+#           # Role duration in seconds (default: 6 hours)
+# #           role-duration-seconds: # optional
+#           # Role session name (default: GitHubActions)
+# #           role-session-name: # optional
+#           # The external ID of the role to assume
+# #           role-external-id: # optional
+#           # Skip session tagging during role assumption
+# #           role-skip-session-tagging: # optional
+#       - name: Run CodeBuild
+#         # You may pin to the exact commit or the version.
+#         # uses: aws-actions/aws-codebuild-run-build@0a2ddc3a24e0f6b41d4a61635d87dcb2482c7b49
+#         uses: aws-actions/aws-codebuild-run-build@v1.0.3
+#         with:
+#           # AWS CodeBuild Project Name
+#           project-name: CodeBuildImageBuilder-AL2-x86_64-Standard
+# #           # Buildspec Override
+# #           buildspec-override: # optional
+# #           # Comma separated list of environment variables to send to CodeBuild
+# #           env-vars-for-codebuild: # optional
         
           
