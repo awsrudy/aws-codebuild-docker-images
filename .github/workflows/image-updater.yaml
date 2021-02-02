@@ -21,22 +21,25 @@ jobs:
 #         with:
 #           name: hash-data
 #           path: hash-data.txt
-      - name: Compare Master Branch Commit with Last Checked Commit
-        run: |
-          REMOTE_HASH=$(git ls-remote https://github.com/aws/aws-codebuild-docker-images.git refs/heads/master | cut -f 1 )
-          #LAST_HASH_KNOWN=$(cat hash-data.txt)
-          #if [[ ${REMOTE_HASH} == ${LAST_KNOWN_HASH} ]]; then
-          #  echo "No changes, finishing job"
-          #  exit 0;
-          #else
-          #  echo "SOMETHING IS DIFFERENT"
-          #fi
-          echo "${REMOTE_HASH}" > hash-data.txt
-      - name: Add to Cache
+#       - name: Compare Master Branch Commit with Last Checked Commit
+#         run: |
+#           REMOTE_HASH=$(git ls-remote https://github.com/aws/aws-codebuild-docker-images.git refs/heads/master | cut -f 1 )
+#           #LAST_HASH_KNOWN=$(cat hash-data.txt)
+#           #if [[ ${REMOTE_HASH} == ${LAST_KNOWN_HASH} ]]; then
+#           #  echo "No changes, finishing job"
+#           #  exit 0;
+#           #else
+#           #  echo "SOMETHING IS DIFFERENT"
+#           #fi
+#           echo "${REMOTE_HASH}" > hash-data.txt
+      - name: Load Cache
         uses: actions/cache@v2.1.3
         with:
           path: ./hash-data.txt
           key: REMOTE_HASH
+      - name: What is in the cache
+        run: |
+          cat ./hash-data.txt
 #       - name: Update Last Checked Commit Hash with Updated Hash
 #         uses: actions/upload-artifact@v2
 #         with:
