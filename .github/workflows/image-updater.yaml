@@ -78,6 +78,6 @@ jobs:
 #           project-name: CodeBuildImageBuilder-AL2-x86_64-Standard
         - name: TEST
           run: |
-            echo "Check for Changes new_commits output = ${{ jobs.check-for-changes.outputs.new_commits }}"
+            echo "Check for Changes new_commits output = ${{ needs.check-for-changes.outputs.new_commits }}"
         
           
