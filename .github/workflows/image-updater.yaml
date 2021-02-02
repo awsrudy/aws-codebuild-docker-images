@@ -14,17 +14,29 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   check-for-changes:
+    environment: codebuild-updater
     runs-on: ubuntu-latest
     steps:
-      - name: Load Cache
-        uses: actions/cache@v2.1.3
+      - name: "Configure AWS Credentials"
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          path: ./hash-data.txt
-          key: REMOTE_HASH
-      - name: compare-last-known-hash-with-remote
+          # AWS Access Key ID. This input is required if running in the GitHub hosted environment. It is optional if running in a self-hosted environment that already has AWS credentials, for example on an EC2 instance.
+          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+          # AWS Secret Access Key. This input is required if running in the GitHub hosted environment. It is optional if running in a self-hosted environment that already has AWS credentials, for example on an EC2 instance.
+          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          # AWS Region, e.g. us-east-2
+          aws-region: us-east-1
+          # Whether to set the AWS account ID for these credentials as a secret value, so that it is masked in logs. Valid values are 'true' and 'false'. Defaults to true
+          mask-aws-account-id: true
+      - name: Get Last Known Commit Hash from S3
+        id: get-last-commit-hash-know-commit-from-s3
+        run: |
+          aws s3 cp s3://${{secret.S3_BUCKET}}/LAST_KNOWN_HASH.txt ./LAST_KNOWN_HASH.txt 
+      - name: Compare Last Known Git Hash with Remote Hash
+        id: compare-last-known-hash-with-remote
         run: |
           REMOTE_HASH=$(git ls-remote https://github.com/aws/aws-codebuild-docker-images.git refs/heads/master | cut -f 1 )
-          LAST_KNOWN_HASH=$(cat hash-data.txt)
+          LAST_KNOWN_HASH=$(cat ./LAST_KNOWN_HASH.txt)
           echo "REMOTE_HASH=${REMOTE_HASH}"
           echo "LAST_KNOWN_HASH=${LAST_KNOWN_HASH}"
           if [[ ${REMOTE_HASH} == ${LAST_KNOWN_HASH} ]]; then
@@ -32,12 +44,11 @@ jobs:
           else
             echo "::set-output name=new_commits::true"
           fi
-            echo "TEST1" > hash-data.txt
-#       - name: Update Cache
-#         uses: actions/cache@v2.1.3
-#         with:
-#           path: ./hash-data.txt
-#           key: REMOTE_HASH
+            echo "TEST1" > ./LAST_KNOWN_HASH.txt
+      - name: Upload Latest Commit Hash to S3
+        id: upload-latest-commit-hash-to-s3
+        run: |
+          aws s3 cp ./LAST_KNOWN_HASH.txt s3://${{secrets.S3_BUCKET}}/LAST_KNOWN_HASH.txt
     outputs:
       new_commits: ${{ steps.compare-last-known-hash-with-remote.outputs.new_commits }}
 
