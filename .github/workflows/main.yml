@@ -4,8 +4,8 @@ name: Keep Images Updated
 
 # This is what triggers the workflow
 on: 
-  schedule:
-    - cron: '0 0 * * *' # This will tell the workflow to run every day at midnight
+#   schedule:
+#     - cron: '0 0 * * *' # This will tell the workflow to run every day at midnight
 
 
   # Allows you to run this workflow manually from the Actions tab
