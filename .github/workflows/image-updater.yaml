@@ -14,7 +14,8 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   check-for-changes:
-    environment: codebuild-updater
+    name: Check for any code changes
+    environment: codebuild-environment
     runs-on: ubuntu-latest
     steps:
       - name: "Configure AWS Credentials"
@@ -54,6 +55,7 @@ jobs:
 
           
   trigger-code-build:
+    name: Trigger CodeBuild to create ECR image if the code has changed
     needs:  check-for-changes
     if: needs.check-for-changes.outputs.new_commits == 'false'
     runs-on: ubuntu-latest
