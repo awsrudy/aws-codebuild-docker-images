@@ -21,28 +21,30 @@ jobs:
         with:
           path: ./hash-data.txt
           key: REMOTE_HASH
-      - name: Compare Master Branch Commit with Last Checked Commit
+      - name: compare-last-known-hash-with-remote
         run: |
           REMOTE_HASH=$(git ls-remote https://github.com/aws/aws-codebuild-docker-images.git refs/heads/master | cut -f 1 )
           LAST_KNOWN_HASH=$(cat hash-data.txt)
           echo "REMOTE_HASH=${REMOTE_HASH}"
           echo "LAST_KNOWN_HASH=${LAST_KNOWN_HASH}
           if [[ ${REMOTE_HASH} == ${LAST_KNOWN_HASH} ]]; then
-             echo "::set-env name=NEW_COMMITS::false"
+            echo "::set-output name=new_commits::false"
           else
-            echo "::set-env name=NEW_COMMITS::true"
+            echo "::set-output name=new_commits::true"
           fi
-          echo "${REMOTE_HASH}" > hash-data.txt
+            echo "${REMOTE_HASH}" > hash-data.txt
       - name: Update Cache
         uses: actions/cache@v2.1.3
         with:
           path: ./hash-data.txt
           key: REMOTE_HASH
+    outputs:
+      new_commits: ${{ steps.compare-last-known-hash-with-remote.outputs.new_commits }}
 
           
   trigger-code-build:
     needs:  check-for-changes
-    if: env.NEW_COMMITS == "true"
+    if: needs.check-for-changes.outputs.new_commits == "true"
     runs-on: ubuntu-latest
     steps:
       - name: "Configure AWS Credentials"
