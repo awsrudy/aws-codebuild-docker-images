@@ -57,24 +57,27 @@ jobs:
   trigger-code-build:
     name: Trigger CodeBuild to create ECR image if the code has changed
     needs:  check-for-changes
-    if: jobs.check-for-changes.outputs.new_commits == 'true'
+#     if: jobs.check-for-changes.outputs.new_commits == 'true'
     runs-on: ubuntu-latest
     steps:
-      - name: "Configure AWS Credentials"
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          # AWS Access Key ID. This input is required if running in the GitHub hosted environment. It is optional if running in a self-hosted environment that already has AWS credentials, for example on an EC2 instance.
-          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
-          # AWS Secret Access Key. This input is required if running in the GitHub hosted environment. It is optional if running in a self-hosted environment that already has AWS credentials, for example on an EC2 instance.
-          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-          # AWS Region, e.g. us-east-2
-          aws-region: us-east-1
-          # Whether to set the AWS account ID for these credentials as a secret value, so that it is masked in logs. Valid values are 'true' and 'false'. Defaults to true
-          mask-aws-account-id: true
-      - name: Run CodeBuild
-        uses: aws-actions/aws-codebuild-run-build@v1.0.3
-        with:
-          # AWS CodeBuild Project Name
-          project-name: CodeBuildImageBuilder-AL2-x86_64-Standard
+#       - name: "Configure AWS Credentials"
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           # AWS Access Key ID. This input is required if running in the GitHub hosted environment. It is optional if running in a self-hosted environment that already has AWS credentials, for example on an EC2 instance.
+#           aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+#           # AWS Secret Access Key. This input is required if running in the GitHub hosted environment. It is optional if running in a self-hosted environment that already has AWS credentials, for example on an EC2 instance.
+#           aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+#           # AWS Region, e.g. us-east-2
+#           aws-region: us-east-1
+#           # Whether to set the AWS account ID for these credentials as a secret value, so that it is masked in logs. Valid values are 'true' and 'false'. Defaults to true
+#           mask-aws-account-id: true
+#       - name: Run CodeBuild
+#         uses: aws-actions/aws-codebuild-run-build@v1.0.3
+#         with:
+#           # AWS CodeBuild Project Name
+#           project-name: CodeBuildImageBuilder-AL2-x86_64-Standard
+        - name: TEST
+          run: |
+            echo "Check for Changes new_commits output = ${{ jobs.check-for-changes.outputs.new_commits }}"
         
           
