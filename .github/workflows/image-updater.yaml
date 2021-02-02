@@ -31,7 +31,7 @@ jobs:
       - name: Get Last Known Commit Hash from S3
         id: get-last-commit-hash-know-commit-from-s3
         run: |
-          aws s3 cp s3://${{secret.S3_BUCKET}}/LAST_KNOWN_HASH.txt ./LAST_KNOWN_HASH.txt 
+          aws s3 cp s3://${{secrets.S3_BUCKET}}/LAST_KNOWN_HASH.txt ./LAST_KNOWN_HASH.txt 
       - name: Compare Last Known Git Hash with Remote Hash
         id: compare-last-known-hash-with-remote
         run: |
