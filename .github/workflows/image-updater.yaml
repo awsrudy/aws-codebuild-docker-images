@@ -33,18 +33,18 @@ jobs:
             echo "::set-output name=new_commits::true"
           fi
             echo "${REMOTE_HASH}" > hash-data.txt
-      - name: Update Cache
-        uses: actions/cache@v2.1.3
-        with:
-          path: ./hash-data.txt
-          key: REMOTE_HASH
+#       - name: Update Cache
+#         uses: actions/cache@v2.1.3
+#         with:
+#           path: ./hash-data.txt
+#           key: REMOTE_HASH
     outputs:
       new_commits: ${{ steps.compare-last-known-hash-with-remote.outputs.new_commits }}
 
           
   trigger-code-build:
     needs:  check-for-changes
-    if: needs.check-for-changes.outputs.new_commits == 'true'
+    if: needs.check-for-changes.outputs.new_commits == 'false'
     runs-on: ubuntu-latest
     steps:
       - name: "Configure AWS Credentials"
