@@ -44,7 +44,9 @@ jobs:
           
   trigger-code-build:
     needs:  check-for-changes
-    if: needs.check-for-changes.outputs.new_commits == "true"
+    env:
+      NEW_COMMITS: ${needs.check-for-changes.outputs.new_commits}
+    if: env.NEW_COMMITS == "true"
     runs-on: ubuntu-latest
     steps:
       - name: "Configure AWS Credentials"
