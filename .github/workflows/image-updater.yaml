@@ -42,7 +42,7 @@ jobs:
           
   trigger-code-build:
     needs:  check-for-changes
-    if: ${{ env.NEW_COMMITS }} == "true"
+    if: env.NEW_COMMITS == "true"
     runs-on: ubuntu-latest
     steps:
       - name: "Configure AWS Credentials"
