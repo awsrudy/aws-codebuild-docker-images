@@ -57,7 +57,7 @@ jobs:
   trigger-code-build:
     name: Trigger CodeBuild to create ECR image if the code has changed
     needs:  check-for-changes
-    if: needs.check-for-changes.outputs.new_commits == 'false'
+    if: jobs.check-for-changes.outputs.new_commits == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: "Configure AWS Credentials"
